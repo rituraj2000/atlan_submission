@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Pagination, SearchBar } from "./Pages/Home/homepage";
+import { SearchBar } from "./Pages/Home/components/searchbar";
+import { Pagination } from "./Pages/Home/components/paginationComp";
 import { Table } from "./Pages/Home/components/table";
 import { FilterBar } from "./Pages/Home/components/filterBar";
 import Papa from "papaparse";
