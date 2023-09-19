@@ -10,14 +10,11 @@ import {
   faPhoneAlt,
   faUserShield,
   faShoppingCart,
-  faShoppingBasket,
   faBox,
   faWineBottle,
   faJar,
   faThumbsUp,
   faThumbsDown,
-  faArrowUp,
-  faArrowDown,
 } from "@fortawesome/free-solid-svg-icons";
 
 // SearchBar.js
@@ -228,7 +225,7 @@ export const Table = ({ columns, data }) => {
   );
 
   return (
-    <div className="relative overflow-x-auto h-[500px] w-full">
+    <div className="relative overflow-x-auto h-[500px] w-full scrollbar-thin">
       <table className="w-full whitespace-no-wrap">
         <TableHeader columns={filteredColumns} />
         <tbody className="bg-white divide-y overflow-y-auto h-[450px] relative">

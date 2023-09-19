@@ -7,13 +7,13 @@ import alasql from "alasql";
 import toast, { Toaster } from "react-hot-toast";
 
 function App() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [sqlQuery, setSearchTerm] = useState("");
   const [tableData, setTableData] = useState([]);
   const [columns, setColumns] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [table, setTable] = useState(productData);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10); // You can set any number you like
+  const [rowsPerPage] = useState(10); // You can set any number you like
 
   useEffect(() => {
     Papa.parse(table, {
@@ -25,18 +25,19 @@ function App() {
       },
     });
 
-    setCurrentPage(1);
+    //setCurrentPage(1);
   }, [table, filteredData]);
 
   const handleQuery = () => {
     try {
-      const newFilteredData = alasql(searchTerm, [tableData]);
+      const newFilteredData = alasql(sqlQuery, [tableData]);
       setFilteredData(newFilteredData);
     } catch (error) {
       console.error("Error in SQL Query:", error);
       toast.error(`Error in SQL Query : ${error}`);
     }
   };
+
   // Paginate data
   const lastRowIndex = currentPage * rowsPerPage;
   const firstRowIndex = lastRowIndex - rowsPerPage;
@@ -49,7 +50,7 @@ function App() {
     <div className="container mx-auto flex flex-col items-center px-16 py-12">
       <Toaster position="top-right" reverseOrder={false} />
       <SearchBar
-        searchTerm={searchTerm}
+        searchTerm={sqlQuery}
         setSearchTerm={setSearchTerm}
         handleQuery={handleQuery}
       />
