@@ -36,6 +36,9 @@ The `FilterBar` lets users adjust the data source dynamically using UI (Not the 
 The `Table` component provides a rich visualization, with custom renderers for distinct data columns.
 
 ## 🕒 Load Time Measurement
+![image](https://github.com/rituraj2000/atlan_submission/assets/83244005/0c9392ff-9ae6-4037-a0f1-e72f609bfa99)
+![image](https://github.com/rituraj2000/atlan_submission/assets/83244005/dd9755c0-679d-4851-97c9-d91f2cd163de)
+
 
 I have employed the Browser Developer Tools, mainly in Google Chrome, to measure our page's load time:
 
