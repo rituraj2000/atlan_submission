@@ -1,70 +1,56 @@
-# Getting Started with Create React App
+# React Data Visualization App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview 📚
 
-## Available Scripts
+This application serves as a comprehensive data visualization platform. The app is designed with functionalities to:
+- Parse and display data from CSV files.
+- Use SQL-like queries for searching, powered by the `alasql` library.
+- Offer paginated data viewing.
+- Render an advanced table format with custom columns.
+- Apply dynamic filters to visualize data.
 
-In the project directory, you can run:
+## Technologies Used 💻
 
-### `npm start`
+- **React**: The main framework.
+- **Key Packages**:
+- - `TailwindCss`: Writing Css.
+  - `papaparse`: CSV parsing.
+  - `alasql`: SQL-like data querying.
+  - `react-hot-toast`: Notification pop-ups.
+  - `moment`: Date manipulation.
+  - `@fortawesome/react-fontawesome` & `@fortawesome/free-solid-svg-icons`: Icon display.
+  - `react-window`: Efficiently rendering large lists.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Features 🌟
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### SQL-based Search
+The `SearchBar` component supports SQL-like queries for data filtering.
 
-### `npm test`
+### Dynamic Pagination
+The `Pagination` component helps users navigate large datasets seamlessly.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Data Filtering
+The `FilterBar` lets users adjust the data source dynamically using UI (Not the best version but still work in progress).
 
-### `npm run build`
+### Advanced Data Visualization
+The `Table` component provides a rich visualization, with custom renderers for distinct data columns.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🕒 Load Time Measurement
+![image](https://github.com/rituraj2000/atlan_submission/assets/83244005/0c9392ff-9ae6-4037-a0f1-e72f609bfa99)
+![image](https://github.com/rituraj2000/atlan_submission/assets/83244005/dd9755c0-679d-4851-97c9-d91f2cd163de)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+I have employed the Browser Developer Tools, mainly in Google Chrome, to measure our page's load time:
 
-### `npm run eject`
+- **Total Load Time**: Open Developer Tools (`Ctrl + Shift + J` / `Cmd + Option + J` on macOS) > Go to `Network` tab > Refresh the page. The bottom provides a summary of the full loading time.
+  
+- **Resource Load Time**: Within the `Network` tab, the load time for each resource (images, scripts, stylesheets, etc.) is listed, allowing us to identify potential bottlenecks.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+This data aids us in optimizing our application for speed and efficiency.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Performance & Optimization ⚡
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- **Paging**: To enhance responsiveness and efficiency, especially for hefty datasets, I implemented pagination. This ensures that only a subset of data is loaded and rendered at any given time, reducing the 
+              rendering burden and improving user experience.
+- **React Window(Attempted, not implemented in the final version)**: I attempted to utilize `react-window` for optimized rendering, especially with large datasets. However, it did not meet our specific requirements for the final version.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
