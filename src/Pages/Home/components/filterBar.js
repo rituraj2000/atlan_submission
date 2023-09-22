@@ -10,7 +10,7 @@ export const FilterBar = ({ setSearchTerm, setTable, columns }) => {
   const [whereBlobs, setWhereBlobs] = useState([0]);
 
   const [selectTerms, setSelectTerm] = useState([]);
-  const [fromTerm, setFromTerm] = useState("?");
+  const [fromTerm, setFromTerm] = useState("productData");
   const [wherTerms, setWhereTerm] = useState([]);
 
   const generateSQL = () => {
@@ -24,9 +24,14 @@ export const FilterBar = ({ setSearchTerm, setTable, columns }) => {
     // Add a space before WHERE clause if it exists, otherwise add an empty string
     const whereWithSpace = whereString ? ` ${whereString}` : "";
 
+    //1.
     // Generating SQL string
+    // const SQL = fromTerm
+    //   ? `SELECT ${selectString} FROM ?${whereWithSpace}`
+    //   : "";
+
     const SQL = fromTerm
-      ? `SELECT ${selectString} FROM ?${whereWithSpace}`
+      ? `SELECT ${selectString} FROM ${fromTerm}${whereWithSpace}`
       : "";
 
     setSearchTerm(SQL.trim());
@@ -102,14 +107,15 @@ export const FilterBar = ({ setSearchTerm, setTable, columns }) => {
         />
 
         {/* FROM section */}
-        <div className="font-sans italic ml-2 flex-shrink-0 font-medium">FROM</div>
-        <FROMColumnBlob
-          columnList={["a", "b"]}
-          onChangeHandler={handleFROMChange}
-        />
+        <div className="font-sans italic ml-2 flex-shrink-0 font-medium">
+          FROM
+        </div>
+        <FROMColumnBlob onChangeHandler={handleFROMChange} />
 
         {/* WHERE section */}
-        <div className="font-sans italic ml-2 flex-shrink-0 font-medium">WHERE</div>
+        <div className="font-sans italic ml-2 flex-shrink-0 font-medium">
+          WHERE
+        </div>
         {whereBlobs.map((_, index) => (
           <WHEREColumnBlob key={index} />
         ))}

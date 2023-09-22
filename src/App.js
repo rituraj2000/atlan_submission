@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { SearchBar } from "./Pages/Home/components/searchbar";
+import { SQLBar } from "./Pages/Home/components/SQLbar";
 import { Pagination } from "./Pages/Home/components/paginationComp";
 import { Table } from "./Pages/Home/components/table";
 import { FilterBar } from "./Pages/Home/components/filterBar";
@@ -19,7 +19,9 @@ function App() {
 
   const handleQuery = () => {
     try {
-      const newFilteredData = alasql(sqlQuery, [tableData]);
+      const modifiedSQL = sqlQuery.replace(/FROM (\w+)/, "FROM ?");
+
+      const newFilteredData = alasql(modifiedSQL, [tableData]);
       setFilteredData(newFilteredData);
     } catch (error) {
       console.error("Error in SQL Query:", error);
@@ -54,10 +56,11 @@ function App() {
   return (
     <div className="container mx-auto flex flex-col items-center px-16 py-12">
       <Toaster position="top-right" reverseOrder={false} />
-      <SearchBar
+      <SQLBar
         searchTerm={sqlQuery}
         setSearchTerm={setSQLQuery}
         handleQuery={handleQuery}
+        setTable={setTable}
       />
       <FilterBar
         setTable={setTable}
