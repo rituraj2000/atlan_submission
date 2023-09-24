@@ -82,6 +82,30 @@ export const FilterBar = ({ setSearchTerm, setTable, columns }) => {
     generateSQL();
   };
 
+  const handleWHEREChange = (idx, type, e) => {
+    const newWherTerms = [...wherTerms];
+
+    if (!newWherTerms[idx]) {
+      newWherTerms[idx] = { column: "", operator: "", value: "" };
+    }
+
+    newWherTerms[idx][type] = e.target.value;
+
+    setWhereTerm(newWherTerms);
+  };
+
+  // handleWHERESubmit
+  const handleWHERESubmit = (idx) => {
+    const term = wherTerms[idx];
+    if (term.column && term.operator && term.value) {
+      const newWherTerms = [...wherTerms];
+      newWherTerms[idx] = `${term.column} ${term.operator} '${term.value}'`;
+      setWhereTerm(newWherTerms);
+    } else {
+      toast.error("Incomplete WHERE term");
+    }
+  };
+
   useEffect(() => {
     generateSQL();
   }, [selectTerms, fromTerm, wherTerms]);
@@ -117,7 +141,15 @@ export const FilterBar = ({ setSearchTerm, setTable, columns }) => {
           WHERE
         </div>
         {whereBlobs.map((_, index) => (
-          <WHEREColumnBlob key={index} />
+          <WHEREColumnBlob
+            key={index}
+            index={index}
+            onChangeHandler={handleWHEREChange}
+            handleWHERESubmit={() => {
+              handleWHERESubmit(index);
+            }}
+            columns={columns}
+          />
         ))}
         <AddColumnButton
           onClick={() => setWhereBlobs([...whereBlobs, whereBlobs.length])}
@@ -138,25 +170,34 @@ const AddColumnButton = ({ onClick }) => (
   </div>
 );
 
-const SELECTColumnBlob = ({ onChangeHandler, onDeleteHandler, columns }) => (
-  <div className="px-2 py-1 ml-3 rounded-lg border bg-white border-[#468AF9] flex items-center text-sm text-[#468AF9] flex-shrink-0">
-    <select
-      onChange={onChangeHandler}
-      className="text-sm bg-transparent border-0 outline-none"
-    >
-      {columns.map((item, index) => (
-        <option key={index}>{item}</option>
-      ))}
-    </select>
-    {/* Delete Button */}
-    <button
-      onClick={onDeleteHandler}
-      className="ml-2 w-4 h-4 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 focus:bg-red-700 focus:ring focus:ring-red-200 focus:ring-opacity-50 transition ease-in-out duration-200"
-    >
-      <FontAwesomeIcon icon={faTrashAlt} className="text-white text-[8px]" />
-    </button>
-  </div>
-);
+const SELECTColumnBlob = ({ onChangeHandler, onDeleteHandler, columns }) => {
+  return (
+    <div className="px-2 py-1 ml-3 rounded-lg border bg-white border-[#468AF9] flex items-center text-sm text-[#468AF9] flex-shrink-0">
+      <select
+        onChange={onChangeHandler}
+        className="text-sm bg-transparent border-0 outline-none"
+        defaultValue="*"
+      >
+        <option
+          value="*"
+          className="bg-gray-200 font-bold text-blue-700 px-2 py-1 rounded hover:bg-gray-300"
+        >
+          *
+        </option>
+        {columns.map((item, index) => (
+          <option key={index}>{item}</option>
+        ))}
+      </select>
+      {/* Delete Button */}
+      <button
+        onClick={onDeleteHandler}
+        className="ml-2 w-4 h-4 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 focus:bg-red-700 focus:ring focus:ring-red-200 focus:ring-opacity-50 transition ease-in-out duration-200"
+      >
+        <FontAwesomeIcon icon={faTrashAlt} className="text-white text-[8px]" />
+      </button>
+    </div>
+  );
+};
 
 const FROMColumnBlob = ({ onChangeHandler }) => (
   <div className="px-2 py-1 ml-3 rounded-lg border bg-white border-[#468AF9] flex items-center text-sm text-[#468AF9] flex-shrink-0">
@@ -170,37 +211,49 @@ const FROMColumnBlob = ({ onChangeHandler }) => (
   </div>
 );
 
-const WHEREColumnBlob = ({ onChangeHandler }) => (
+const WHEREColumnBlob = ({
+  index,
+  handleWHERESubmit,
+  onChangeHandler,
+  columns,
+}) => (
   <div className="shadow-lg shadow-slate-200 ml-3 bg-white rounded-lg border border-[#468AF9] flex items-center text-xs text-[#468AF9] flex-shrink-0">
     <div className="px-4 py-1 border-r">
       <select
-        onChange={onChangeHandler}
+        onChange={(e) => onChangeHandler(index, "column", e)}
         className="text-sm bg-transparent border-0 outline-none"
       >
-        <option>Option 1</option>
-        <option>Option 2</option>
-        <option>Option 3</option>
+        <option value="?">?</option>
+        {columns.map((item, idx) => (
+          <option key={idx}>{item}</option>
+        ))}
       </select>
     </div>
     <div className="px-4 py-1 border-r">
-      <select className="text-sm bg-transparent border-0 outline-none">
-        {/* Table Selection */}
-        <option>Option 1</option>
-        <option>Option 2</option>
-        <option>Option 3</option>
+      <select
+        onChange={(e) => onChangeHandler(index, "operator", e)}
+        className="text-sm bg-transparent border-0 outline-none"
+      >
+        <option value="?">?</option>
+        <option className=" m-15">=</option>
+        <option className=" m-15">&gt;</option>
+        <option className=" m-15">&lt;</option>
       </select>
     </div>
     <div className="px-4 py-1">
-      <select className="text-sm bg-transparent border-0 outline-none">
-        {/* Property 1 */}
-        <option>Option 1</option>
+      <input
+        onChange={(e) => onChangeHandler(index, "value", e)}
+        type="text"
+        placeholder="Enter value"
+        className="text-xs bg-transparent border border-[#468AF9] rounded-full outline-none px-3 my-1 text-[#468AF9] hover:border-[#6AA0F8] focus:border-[#305FA5] focus:ring-1 focus:ring-[#468AF9] focus:ring-opacity-50"
+      />
 
-        {/* = | <= | >= . . . . */}
-        <option>Option 2</option>
-
-        {/* Property 2 */}
-        <option>Option 3</option>
-      </select>
+      <button
+        onClick={() => handleWHERESubmit(index)}
+        className="ml-2 px-2 py-1 bg-blue-500 text-white rounded"
+      >
+        Submit
+      </button>
     </div>
   </div>
 );
