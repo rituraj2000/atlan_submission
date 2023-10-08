@@ -124,11 +124,11 @@ const TableRow = ({ columns, data }) => {
 
       case "quantityPerUnit":
         let icon;
-        if (value.includes("boxes")) {
+        if (value && value.includes("boxes")) {
           icon = faBox;
-        } else if (value.includes("bottles")) {
+        } else if (value && value.includes("bottles")) {
           icon = faWineBottle;
-        } else if (value.includes("jars")) {
+        } else if (value && value.includes("jars")) {
           icon = faJar;
         } else {
           icon = faBox;
