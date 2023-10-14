@@ -13,7 +13,7 @@ import {
   faThumbsUp,
   faThumbsDown,
 } from "@fortawesome/free-solid-svg-icons";
-import moment from "moment"; // If you don't already have this, you can install it with npm install moment
+import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FixedSizeList as List } from "react-window";
 import toast from "react-hot-toast";
@@ -55,6 +55,8 @@ const TableRow = ({ columns, data }) => {
         } else if (value === "Sales Manager") {
           titleIcon = faShoppingCart;
         } else if (value === "Sales Representative") {
+          titleIcon = faUserTie;
+        } else {
           titleIcon = faUserTie;
         }
         return (
@@ -207,43 +209,6 @@ const TableRow = ({ columns, data }) => {
 };
 
 //Table.js
-// export const Table = ({ columns, data }) => {
-//   const filteredColumns = columns.filter((col) =>
-//     data.some((row) => row[col] !== null && row[col] !== undefined)
-//   );
-
-//   const Row = ({ index, style }) => {
-//     const rowData = data[index];
-//     return (
-//       <TableRow
-//         key={index}
-//         data={rowData}
-//         columns={filteredColumns}
-//         style={style}
-//       />
-//     );
-//   };
-
-//   return (
-//     <div className="relative h-[500px] w-full scrollbar-thin">
-//       <table className="w-full whitespace-no-wrap">
-//         <TableHeader columns={filteredColumns} />
-//         <List
-//           direction="horizontal"
-//           className="bg-white"
-//           height={500} // Height of the visible area
-//           itemCount={data.length} // Total number of rows
-//           itemSize={50} // Assumed height of each row, adjust as needed
-//           width={1500} // Full width to match table
-//           innerElementType="tbody" // Use tbody as the container
-//         >
-//           {Row}
-//         </List>
-//       </table>
-//     </div>
-//   );
-// };
-//Table.js
 export const Table = ({ columns, data }) => {
   const filteredColumns = columns.filter((col) =>
     data.some((row) => row[col] !== null && row[col] !== undefined)
@@ -254,9 +219,10 @@ export const Table = ({ columns, data }) => {
       <table className="w-full whitespace-no-wrap">
         <TableHeader columns={filteredColumns} />
         <tbody className="bg-white divide-y overflow-y-auto h-[450px] relative">
-          {data.map((row, i) => (
-            <TableRow key={i} data={row} columns={filteredColumns} />
-          ))}
+          {data &&
+            data.map((row, i) => (
+              <TableRow key={i} data={row} columns={filteredColumns} />
+            ))}
         </tbody>
       </table>
     </div>

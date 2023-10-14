@@ -5,7 +5,11 @@ import employeeData from "../../../utils/datasets/employees.csv";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
-export const FilterBar = ({ setSearchTerm, setTable, columns }) => {
+export const FilterBar = ({
+  setSearchTerm: setSQLQuery,
+  setTable,
+  columns,
+}) => {
   const [selectBlobs, setSelectBlobs] = useState([0]);
   const [whereBlobs, setWhereBlobs] = useState([0]);
 
@@ -14,31 +18,18 @@ export const FilterBar = ({ setSearchTerm, setTable, columns }) => {
   const [wherTerms, setWhereTerm] = useState([]);
 
   const generateSQL = () => {
-    // If no select terms are present, use '*' by default
     const selectString = selectTerms.length > 0 ? selectTerms.join(", ") : "*";
 
-    // If where terms are present, join them with 'AND'
     const whereString =
       wherTerms.length > 0 ? `WHERE ${wherTerms.join(" AND ")}` : "";
 
-    // Add a space before WHERE clause if it exists, otherwise add an empty string
     const whereWithSpace = whereString ? ` ${whereString}` : "";
-
-    //1.
-    // Generating SQL string
-    // const SQL = fromTerm
-    //   ? `SELECT ${selectString} FROM ?${whereWithSpace}`
-    //   : "";
 
     const SQL = fromTerm
       ? `SELECT ${selectString} FROM ${fromTerm}${whereWithSpace}`
       : "";
 
-    setSearchTerm(SQL.trim());
-
-    // Debugging - to check if the SQL string is formed correctly
-    console.log(fromTerm);
-    console.log("Generated SQL:", SQL.trim());
+    setSQLQuery(SQL.trim());
   };
 
   const handleSELECTChange = (idx, e) => {
@@ -79,6 +70,12 @@ export const FilterBar = ({ setSearchTerm, setTable, columns }) => {
     }
 
     setFromTerm(e.target.value);
+    setWhereTerm([]);
+    setSelectTerm([]);
+
+    setSelectBlobs([0]);
+    setWhereBlobs([0]);
+
     generateSQL();
   };
 
@@ -94,7 +91,6 @@ export const FilterBar = ({ setSearchTerm, setTable, columns }) => {
     setWhereTerm(newWherTerms);
   };
 
-  // handleWHERESubmit
   const handleWHERESubmit = (idx) => {
     const term = wherTerms[idx];
     if (term.column && term.operator && term.value) {
@@ -129,13 +125,11 @@ export const FilterBar = ({ setSearchTerm, setTable, columns }) => {
         <AddColumnButton
           onClick={() => setSelectBlobs([...selectBlobs, selectBlobs.length])}
         />
-
         {/* FROM section */}
         <div className="font-sans italic ml-2 flex-shrink-0 font-medium">
           FROM
         </div>
         <FROMColumnBlob onChangeHandler={handleFROMChange} />
-
         {/* WHERE section */}
         <div className="font-sans italic ml-2 flex-shrink-0 font-medium">
           WHERE
@@ -158,8 +152,6 @@ export const FilterBar = ({ setSearchTerm, setTable, columns }) => {
     </div>
   );
 };
-
-// Components -->
 
 const AddColumnButton = ({ onClick }) => (
   <div
@@ -185,7 +177,7 @@ const SELECTColumnBlob = ({ onChangeHandler, onDeleteHandler, columns }) => {
           *
         </option>
         {columns.map((item, index) => (
-          <option key={index}>{item}</option>
+          <option key={`${index}-${item}`}>{item}</option>
         ))}
       </select>
       {/* Delete Button */}
@@ -225,7 +217,7 @@ const WHEREColumnBlob = ({
       >
         <option value="?">?</option>
         {columns.map((item, idx) => (
-          <option key={idx}>{item}</option>
+          <option key={`${idx}-${item}`}>{item}</option>
         ))}
       </select>
     </div>

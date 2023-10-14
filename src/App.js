@@ -16,29 +16,20 @@ function App() {
   const [table, setTable] = useState(productData);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(10);
+  const [currentTableData, setCurrentTableData] = useState(tableData);
 
   const handleQuery = () => {
     try {
       const modifiedSQL = sqlQuery.replace(/FROM (\w+)/, "FROM ?");
-
       const newFilteredData = alasql(modifiedSQL, [tableData]);
+      const lastRowIndex = currentPage * rowsPerPage;
+      const firstRowIndex = lastRowIndex - rowsPerPage;
+      setCurrentTableData(newFilteredData.slice(firstRowIndex, lastRowIndex));
       setFilteredData(newFilteredData);
     } catch (error) {
-      console.error("Error in SQL Query:", error);
       toast.error(`Error in SQL Query : ${error}`);
     }
   };
-
-  //Paginate data
-  const lastRowIndex = currentPage * rowsPerPage;
-  const firstRowIndex = lastRowIndex - rowsPerPage;
-
-  const currentTableData = useMemo(() => {
-    return (filteredData.length > 0 ? filteredData : tableData).slice(
-      firstRowIndex,
-      lastRowIndex
-    );
-  }, [filteredData, tableData, firstRowIndex, lastRowIndex]);
 
   useEffect(() => {
     Papa.parse(table, {
@@ -49,9 +40,25 @@ function App() {
         setColumns(result.meta.fields);
       },
     });
-
-    //setCurrentPage(1);
   }, [table]);
+
+  useEffect(() => {
+    const lastRowIndex = currentPage * rowsPerPage;
+    const firstRowIndex = lastRowIndex - rowsPerPage;
+    const tempData = tableData.slice(firstRowIndex, lastRowIndex);
+    setCurrentTableData(tempData);
+    setFilteredData([]);
+  }, [tableData, rowsPerPage]);
+
+  useEffect(() => {
+    const lastRowIndex = currentPage * rowsPerPage;
+    const firstRowIndex = lastRowIndex - rowsPerPage;
+
+    const tempData = (
+      filteredData.length !== 0 ? filteredData : tableData
+    ).slice(firstRowIndex, lastRowIndex);
+    setCurrentTableData(tempData);
+  }, [currentPage]);
 
   return (
     <div className="container mx-auto flex flex-col items-center px-16 py-12">
@@ -75,11 +82,7 @@ function App() {
         setCurrentPage={setCurrentPage}
       />
 
-      <Table
-        columns={columns}
-        // data={filteredData.length > 0 ? filteredData : tableData}
-        data={currentTableData}
-      />
+      <Table columns={columns} data={currentTableData} />
     </div>
   );
 }
