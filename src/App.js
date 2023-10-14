@@ -26,6 +26,7 @@ function App() {
       const firstRowIndex = lastRowIndex - rowsPerPage;
       setCurrentTableData(newFilteredData.slice(firstRowIndex, lastRowIndex));
       setFilteredData(newFilteredData);
+      setCurrentPage(1);
     } catch (error) {
       toast.error(`Error in SQL Query : ${error}`);
     }

@@ -15,13 +15,13 @@ export const FilterBar = ({
 
   const [selectTerms, setSelectTerm] = useState([]);
   const [fromTerm, setFromTerm] = useState("productData");
-  const [wherTerms, setWhereTerm] = useState([]);
+  const [whereTermsList, setWhereTermsList] = useState([]);
 
   const generateSQL = () => {
     const selectString = selectTerms.length > 0 ? selectTerms.join(", ") : "*";
 
     const whereString =
-      wherTerms.length > 0 ? `WHERE ${wherTerms.join(" AND ")}` : "";
+      whereTermsList.length > 0 ? `WHERE ${whereTermsList.join(" AND ")}` : "";
 
     const whereWithSpace = whereString ? ` ${whereString}` : "";
 
@@ -70,7 +70,7 @@ export const FilterBar = ({
     }
 
     setFromTerm(e.target.value);
-    setWhereTerm([]);
+    setWhereTermsList([]);
     setSelectTerm([]);
 
     setSelectBlobs([0]);
@@ -79,32 +79,19 @@ export const FilterBar = ({
     generateSQL();
   };
 
-  const handleWHEREChange = (idx, type, e) => {
-    const newWherTerms = [...wherTerms];
-
-    if (!newWherTerms[idx]) {
-      newWherTerms[idx] = { column: "", operator: "", value: "" };
-    }
-
-    newWherTerms[idx][type] = e.target.value;
-
-    setWhereTerm(newWherTerms);
-  };
-
-  const handleWHERESubmit = (idx) => {
-    const term = wherTerms[idx];
-    if (term.column && term.operator && term.value) {
-      const newWherTerms = [...wherTerms];
-      newWherTerms[idx] = `${term.column} ${term.operator} '${term.value}'`;
-      setWhereTerm(newWherTerms);
-    } else {
-      toast.error("Incomplete WHERE term");
-    }
+  const handleWHERESubmit = ({ index, whereTerm }) => {
+    const newWhereTerms = [...whereTermsList];
+    newWhereTerms[index] = whereTerm;
+    setWhereTermsList(newWhereTerms);
   };
 
   useEffect(() => {
     generateSQL();
-  }, [selectTerms, fromTerm, wherTerms]);
+  }, [selectTerms, fromTerm, whereTermsList]);
+
+  useEffect(() => {
+    console.log(whereTermsList);
+  }, [whereTermsList]);
 
   return (
     <div className="w-full p-6 mb-5 mt-5 flex items-center overflow-x-auto scrollbar-thin bg-blue-100">
@@ -138,9 +125,8 @@ export const FilterBar = ({
           <WHEREColumnBlob
             key={index}
             index={index}
-            onChangeHandler={handleWHEREChange}
-            handleWHERESubmit={() => {
-              handleWHERESubmit(index);
+            handleSubmit={({ index, whereTerm }) => {
+              handleWHERESubmit({ index, whereTerm });
             }}
             columns={columns}
           />
@@ -203,49 +189,68 @@ const FROMColumnBlob = ({ onChangeHandler }) => (
   </div>
 );
 
-const WHEREColumnBlob = ({
-  index,
-  handleWHERESubmit,
-  onChangeHandler,
-  columns,
-}) => (
-  <div className="shadow-lg shadow-slate-200 ml-3 bg-white rounded-lg border border-[#468AF9] flex items-center text-xs text-[#468AF9] flex-shrink-0">
-    <div className="px-4 py-1 border-r">
-      <select
-        onChange={(e) => onChangeHandler(index, "column", e)}
-        className="text-sm bg-transparent border-0 outline-none"
-      >
-        <option value="?">?</option>
-        {columns.map((item, idx) => (
-          <option key={`${idx}-${item}`}>{item}</option>
-        ))}
-      </select>
-    </div>
-    <div className="px-4 py-1 border-r">
-      <select
-        onChange={(e) => onChangeHandler(index, "operator", e)}
-        className="text-sm bg-transparent border-0 outline-none"
-      >
-        <option value="?">?</option>
-        <option className=" m-15">=</option>
-        <option className=" m-15">&gt;</option>
-        <option className=" m-15">&lt;</option>
-      </select>
-    </div>
-    <div className="px-4 py-1">
-      <input
-        onChange={(e) => onChangeHandler(index, "value", e)}
-        type="text"
-        placeholder="Enter value"
-        className="text-xs bg-transparent border border-[#468AF9] rounded-full outline-none px-3 my-1 text-[#468AF9] hover:border-[#6AA0F8] focus:border-[#305FA5] focus:ring-1 focus:ring-[#468AF9] focus:ring-opacity-50"
-      />
+function WHEREColumnBlob({ index, handleSubmit, columns }) {
+  const [property, setProperty] = useState("");
+  const [operator, setOperator] = useState("");
+  const [value, setValue] = useState("");
 
-      <button
-        onClick={() => handleWHERESubmit(index)}
-        className="ml-2 px-2 py-1 bg-blue-500 text-white rounded"
-      >
-        Submit
-      </button>
+  return (
+    <div className="shadow-lg shadow-slate-200 ml-3 bg-white rounded-lg border border-[#468AF9] flex items-center text-xs text-[#468AF9] flex-shrink-0">
+      <div className="px-4 py-1 border-r">
+        <select
+          onChange={(e) => {
+            setProperty(e.target.value);
+          }}
+          className="text-sm bg-transparent border-0 outline-none"
+        >
+          <option value="?">?</option>
+          {columns &&
+            columns.map((item, idx) => (
+              <option key={`${idx}-${item}`}>{item}</option>
+            ))}
+        </select>
+      </div>
+      <div className="px-4 py-1 border-r">
+        <select
+          onChange={(e) => {
+            setOperator(e.target.value);
+          }}
+          className="text-sm bg-transparent border-0 outline-none"
+        >
+          <option value="?">?</option>
+          <option className=" m-15">=</option>
+          <option className=" m-15">&gt;</option>
+          <option className=" m-15">&lt;</option>
+        </select>
+      </div>
+      <div className="px-4 py-1">
+        <input
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
+          value={value}
+          type="text"
+          placeholder="Enter value"
+          className="text-xs bg-transparent border border-[#468AF9] rounded-full outline-none px-3 my-1 text-[#468AF9] hover:border-[#6AA0F8] focus:border-[#305FA5] focus:ring-1 focus:ring-[#468AF9] focus:ring-opacity-50"
+        />
+
+        <button
+          onClick={() => {
+            if (property === "" || value === "" || operator === "") {
+              toast.error("Please Complete Where Term before submitting");
+            } else {
+              // console.log(`${property} ${operator} ${value}`);
+              handleSubmit({
+                index: index,
+                whereTerm: `${property} ${operator} '${value}'`,
+              });
+            }
+          }}
+          className="ml-2 px-2 py-1 bg-blue-500 text-white rounded"
+        >
+          Submit
+        </button>
+      </div>
     </div>
-  </div>
-);
+  );
+}
