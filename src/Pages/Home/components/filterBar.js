@@ -3,7 +3,7 @@ import toast, { Toaster } from "react-hot-toast";
 import productData from "../../../utils/datasets/products.csv";
 import employeeData from "../../../utils/datasets/employees.csv";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faTrashAlt, faCheck } from "@fortawesome/free-solid-svg-icons";
 
 export const FilterBar = ({
   setSearchTerm: setSQLQuery,
@@ -85,6 +85,18 @@ export const FilterBar = ({
     setWhereTermsList(newWhereTerms);
   };
 
+  const handleWHEREDelete = (idx) => {
+    // Remove the blob based on the index
+    const newWhereBlobs = whereBlobs.filter((_, index) => index !== idx);
+    setWhereBlobs(newWhereBlobs);
+
+    // Remove the term based on the index
+    const newWhereTerms = whereTermsList.filter((_, index) => index !== idx);
+    setWhereTermsList(newWhereTerms);
+
+    generateSQL();
+  };
+
   useEffect(() => {
     generateSQL();
   }, [selectTerms, fromTerm, whereTermsList]);
@@ -128,6 +140,7 @@ export const FilterBar = ({
             handleSubmit={({ index, whereTerm }) => {
               handleWHERESubmit({ index, whereTerm });
             }}
+            onDeleteHandler={handleWHEREDelete}
             columns={columns}
           />
         ))}
@@ -189,13 +202,20 @@ const FROMColumnBlob = ({ onChangeHandler }) => (
   </div>
 );
 
-function WHEREColumnBlob({ index, handleSubmit, columns }) {
+function WHEREColumnBlob({ index, handleSubmit, columns, onDeleteHandler }) {
   const [property, setProperty] = useState("");
   const [operator, setOperator] = useState("");
   const [value, setValue] = useState("");
 
+  const isSubmitActive =
+    property !== "" &&
+    property !== "?" &&
+    operator !== "" &&
+    operator !== "?" &&
+    value !== "";
+
   return (
-    <div className="shadow-lg shadow-slate-200 ml-3 bg-white rounded-lg border border-[#468AF9] flex items-center text-xs text-[#468AF9] flex-shrink-0">
+    <div className="shadow-lg shadow-slate-200 ml-3 pr-2 bg-white rounded-lg border border-[#468AF9] flex items-center text-xs text-[#468AF9] flex-shrink-0">
       <div className="px-4 py-1 border-r">
         <select
           onChange={(e) => {
@@ -223,7 +243,7 @@ function WHEREColumnBlob({ index, handleSubmit, columns }) {
           <option className=" m-15">&lt;</option>
         </select>
       </div>
-      <div className="px-4 py-1">
+      <div className="px-4 py-1 flex">
         <input
           onChange={(e) => {
             setValue(e.target.value);
@@ -236,21 +256,26 @@ function WHEREColumnBlob({ index, handleSubmit, columns }) {
 
         <button
           onClick={() => {
-            if (property === "" || value === "" || operator === "") {
-              toast.error("Please Complete Where Term before submitting");
-            } else {
-              // console.log(`${property} ${operator} ${value}`);
-              handleSubmit({
-                index: index,
-                whereTerm: `${property} ${operator} '${value}'`,
-              });
-            }
+            if (!isSubmitActive) return;
+            handleSubmit({
+              index: index,
+              whereTerm: `${property} ${operator} '${value}'`,
+            });
           }}
-          className="ml-2 px-2 py-1 bg-blue-500 text-white rounded"
+          className={`ml-2 w-6 h-6 flex items-center justify-center rounded-full 
+                     ${isSubmitActive ? "bg-blue-500" : "bg-gray-300"} 
+                     text-white transition ease-in-out duration-200`}
         >
-          Submit
+          <FontAwesomeIcon icon={faCheck} />
         </button>
       </div>
+      {/* Delete Button */}
+      <button
+        onClick={() => onDeleteHandler(index)}
+        className="ml-2 w-4 h-4 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 focus:bg-red-700 focus:ring focus:ring-red-200 focus:ring-opacity-50 transition ease-in-out duration-200"
+      >
+        <FontAwesomeIcon icon={faTrashAlt} className="text-white text-[8px]" />
+      </button>
     </div>
   );
 }
