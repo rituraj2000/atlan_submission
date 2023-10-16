@@ -41,6 +41,8 @@ function App() {
         setColumns(result.meta.fields);
       },
     });
+
+    setCurrentPage(1)
   }, [table]);
 
   useEffect(() => {
